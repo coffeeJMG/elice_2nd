@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-export const fontSize = {
+const fontSize = {
   h1: "30px",
   h2: "20px",
   h3: "18px",

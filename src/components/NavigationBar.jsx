@@ -74,7 +74,7 @@ const NavUl = styled.ul`
 `;
 
 const NavLi = styled.li`
-width: 33.3%;
+width: 31%;
 padding: 1%;
 }
 `;
