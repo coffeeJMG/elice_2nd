@@ -26,6 +26,7 @@ import {
   Home,
   MyPage,
   Login,
+  MyCalendar,
   Post,
   SearchPage,
   SignUp,
@@ -38,6 +39,7 @@ function App() {
     <>
       <Container>
         <Router>
+          <MyCalendar />
           <Footer />
           <NavigationBar />
         </Router>
