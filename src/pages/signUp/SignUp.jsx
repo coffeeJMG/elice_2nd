@@ -1,7 +1,13 @@
 /* eslint-disable */
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  useLocation,
+} from "react-router-dom";
 import axios from "axios";
 
 // 이미지 링크
@@ -326,7 +332,7 @@ const HospitalView = () => {
     setNotAllow(true);
   }, [emailValid, pwValid, pwCheckValid, nameValid, phoneValid]);
 
-  // 폼 전송 구현
+  // 회원가입 폼 전송 구현
   const register = () => {
     // axios를 사용하여 POST 요청 만들기
     axios
@@ -347,6 +353,62 @@ const HospitalView = () => {
       });
   };
 
+  // 병원명 get 해오기
+  // const hospitalSearch = () => {
+  //   useEffect(() => {
+  //     axios
+  //       .get(`/hospital`, {
+  //         headers: {
+  //           Accept: "application/json",
+  //         },
+  //       })
+  //       .then((response) => {
+  //         console.log(response.data.data);
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error fetching hospital data:", error);
+  //       });
+  //   });
+  // };
+
+  const [inputValue, setInputValue] = useState("");
+
+  // const handleInputChange = (e) => {
+  //   const value = e.target.value;
+  //   setInputValue(value);
+
+  //   // Make API call
+  //   axios
+  //     .get(`/hospital`)
+  //     .then((response) => {
+  //       setData(response.data);
+  //       console.log(response.data.data.duty);
+  //     })
+  //     .catch((error) => {
+  //       console.error("응답 실패:", error);
+  //     });
+  // };
+
+  const token =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZpcnN0QHRlc3QuZ29vZCIsInN1YiI6IjY0NzdlOTk2YTkwZTQwOWYxYTQ4NzIyMSIsInJvbGUiOiJjbGllbnQiLCJpYXQiOjE2ODU1ODA0MTQsImV4cCI6MTcxNzEzODAxNH0.cWYJrF8kSJrmC4csSlR2x5B4v_ASZhinvKl5NFoShGc";
+
+  const aa = async () => {
+    try {
+      const response = await axios.get(
+        `http://34.64.69.226:3000/hospital/A1106309`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log(response.data.data.dutyName);
+    } catch (error) {
+      console.error("에러에러~~:", error);
+      console.log(token);
+    }
+  };
+
   return (
     <>
       <SignUpForm>
@@ -365,6 +427,8 @@ const HospitalView = () => {
           <SignUpInput
             placeholder="병원명을 검색해주세요"
             type="text"
+            value={inputValue}
+            onChange={aa}
           ></SignUpInput>
           <P>
             *찾으시는 병원이 없으실 경우 하단에 신규병원 등록신청하기를
