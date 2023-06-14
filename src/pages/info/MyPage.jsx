@@ -12,9 +12,9 @@ import { ChildBox } from "./component/ChildBox";
 import styled from "styled-components";
 import colors from "../../constants/colors";
 
-const userToken =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imp1bkBlbWFpbC5jb20iLCJzdWIiOjIwMDA0LCJpYXQiOjE2ODY2Mzk3MjMsImV4cCI6MTcxODE5NzMyM30.owESvX7FLjD-WjxESrMnEoR4glhF1AEBiedQ3WRo0Ok";
-
+const token = localStorage.getItem("token")
+  ? localStorage.getItem("token")
+  : false;
 //주소, 번호, 이메일 칸 앞에 로고넣기 위해 사용
 const Logo = styled.img`
   margin-right: 10px;
@@ -138,7 +138,7 @@ const CancelButton = styled(MyButton)`
 `;
 
 function MyPage() {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [user, setUser] = useState(null);
   const [editData, setEditData] = useState({
@@ -154,7 +154,7 @@ function MyPage() {
       try {
         const res1 = await axios.get("users/get", {
           headers: {
-            Authorization: `Bearer ${userToken}`,
+            Authorization: `Bearer ${token}`,
           },
         });
         console.log(res1.data.data[0]);
@@ -168,7 +168,7 @@ function MyPage() {
 
         const res2 = await axios.get("/kid/get", {
           headers: {
-            Authorization: `Bearer ${userToken}`,
+            Authorization: `Bearer ${token}`,
           },
         });
         setBoxCreators(res2.data.data);
@@ -177,17 +177,6 @@ function MyPage() {
       }
     };
     fetchUserData();
-
-    const getKids = async () => {
-      const axiosGet = await axios.get("/kid/get", {
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      });
-      const kidsData = axiosGet.data.data;
-      setBoxCreators(kidsData);
-    };
-    getKids();
   }, []);
 
   // 클릭시 ChildPage로 이동
@@ -226,7 +215,7 @@ function MyPage() {
         },
         {
           headers: {
-            Authorization: `Bearer ${userToken}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -247,102 +236,107 @@ function MyPage() {
       [name]: value,
     }));
   };
-
-  return (
-    <Container>
-      <Header
-        label={"내정보"}
-        onClick={() => {
-          console.log("Button was clicked!");
-        }}
-      />
-      <Space />
+  if (token) {
+    return (
       <Container>
-        <MyContainer>
-          {isEditing ? (
+        <Header
+          label={"내정보"}
+          onClick={() => {
+            console.log("Button was clicked!");
+          }}
+        />
+        <Space />
+        <Container>
+          <MyContainer>
+            {isEditing ? (
+              <TextContainer>
+                <NameBox
+                  type="text"
+                  name="name"
+                  value={editData.name}
+                  onChange={handleInputChange}
+                />
+                <Underline />
+              </TextContainer>
+            ) : (
+              <TextContainer>
+                <NameText>{editData.name}</NameText>
+                <Underline />
+              </TextContainer>
+            )}
+            {isEditing ? (
+              <div>
+                <SaveButton onClick={handleEditClick}>저장</SaveButton>
+                <CancelButton onClick={handleCancleClick}>취소</CancelButton>
+              </div>
+            ) : (
+              <MyButton onClick={handleEditClick}>회원정보 수정</MyButton>
+            )}
+          </MyContainer>
+          <MyContainerLeftAlignWithLogo logo="address.png">
             <TextContainer>
-              <NameBox
-                type="text"
-                name="name"
-                value={editData.name}
-                onChange={handleInputChange}
-              />
+              {isEditing ? (
+                <AddressBox
+                  type="text"
+                  name="address"
+                  value={editData.address}
+                  onChange={handleInputChange}
+                />
+              ) : (
+                <MyText>{editData.address}</MyText>
+              )}
+            </TextContainer>
+          </MyContainerLeftAlignWithLogo>
+          <MyContainerLeftAlignWithLogo logo="phonenumber.png">
+            <TextContainer>
+              {isEditing ? (
+                <PhonedBox
+                  type="text"
+                  name="phoneNumber"
+                  value={editData.phoneNumber}
+                  onChange={handleInputChange}
+                />
+              ) : (
+                <MyText>{editData.phoneNumber}</MyText>
+              )}
+            </TextContainer>
+          </MyContainerLeftAlignWithLogo>
+          <MyContainerLeftAlignWithLogo logo="email.png">
+            <TextContainer>
+              <MyText>{user ? user.email : "Loading..."}</MyText>
+            </TextContainer>
+          </MyContainerLeftAlignWithLogo>
+          <MyContainer>
+            <TextContainer>
+              <KidText>우리 아이 관리</KidText>
               <Underline />
             </TextContainer>
-          ) : (
-            <TextContainer>
-              <NameText>{editData.name}</NameText>
-              <Underline />
-            </TextContainer>
-          )}
-          {isEditing ? (
-            <div>
-              <SaveButton onClick={handleEditClick}>저장</SaveButton>
-              <CancelButton onClick={handleCancleClick}>취소</CancelButton>
-            </div>
-          ) : (
-            <MyButton onClick={handleEditClick}>회원정보 수정</MyButton>
-          )}
-        </MyContainer>
-        <MyContainerLeftAlignWithLogo logo="address.png">
-          <TextContainer>
-            {isEditing ? (
-              <AddressBox
-                type="text"
-                name="address"
-                value={editData.address}
-                onChange={handleInputChange}
+            <MyButton onClick={handleClick}>아이정보 관리</MyButton>
+          </MyContainer>
+          <KidContainer>
+            {boxCreators.map(({ id, name, gender, birth, memo, image }) => (
+              <ChildBox
+                alwaysShowEditAndRemove={false}
+                defaultEditable={false}
+                key={id}
+                id={id}
+                name={name}
+                gender={gender}
+                birth={birth}
+                memo={memo}
+                image={image}
               />
-            ) : (
-              <MyText>{editData.address}</MyText>
-            )}
-          </TextContainer>
-        </MyContainerLeftAlignWithLogo>
-        <MyContainerLeftAlignWithLogo logo="phonenumber.png">
-          <TextContainer>
-            {isEditing ? (
-              <PhonedBox
-                type="text"
-                name="phoneNumber"
-                value={editData.phoneNumber}
-                onChange={handleInputChange}
-              />
-            ) : (
-              <MyText>{editData.phoneNumber}</MyText>
-            )}
-          </TextContainer>
-        </MyContainerLeftAlignWithLogo>
-        <MyContainerLeftAlignWithLogo logo="email.png">
-          <TextContainer>
-            <MyText>{user ? user.email : "Loading..."}</MyText>
-          </TextContainer>
-        </MyContainerLeftAlignWithLogo>
-        <MyContainer>
-          <TextContainer>
-            <KidText>우리 아이 관리</KidText>
-            <Underline />
-          </TextContainer>
-          <MyButton onClick={handleClick}>아이정보 관리</MyButton>
-        </MyContainer>
-        <KidContainer>
-          {boxCreators.map(({ id, name, gender, birth, memo, image }) => (
-            <ChildBox
-              alwaysShowEditAndRemove={false}
-              defaultEditable={false}
-              key={id}
-              id={id}
-              name={name}
-              gender={gender}
-              birth={birth}
-              memo={memo}
-              image={image}
-            />
-          ))}
-        </KidContainer>
-        <NavigationBar />
+            ))}
+          </KidContainer>
+          <NavigationBar />
+        </Container>
       </Container>
-    </Container>
-  );
+    );
+  } else {
+    alert("로그인해주세요");
+    navigate("/login"); // 로그인 페이지로 이동
+    return navigate("/login"); // 컴포넌트 렌더링을 중지
+  }
 }
 
 export default MyPage;

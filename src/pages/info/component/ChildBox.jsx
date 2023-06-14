@@ -10,8 +10,9 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { instance } from 'axios';
 
-const userToken =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imp1bkBlbWFpbC5jb20iLCJzdWIiOjIwMDA0LCJpYXQiOjE2ODY2Mzk3MjMsImV4cCI6MTcxODE5NzMyM30.owESvX7FLjD-WjxESrMnEoR4glhF1AEBiedQ3WRo0Ok";
+const token = localStorage.getItem("token")
+  ? localStorage.getItem("token")
+  : false;
 // 빈공간
 const Space = styled.div`
   margin-bottom: 20px;
@@ -162,7 +163,7 @@ export const ChildBox = ({
       // 이미지 삭제 요청
       const response = await axios.delete(`http://34.64.69.226:5000/api/image/${id}`, {
         headers: {
-          Authorization: `Bearer ${userToken}`
+          Authorization: `Bearer ${token}`
         }
       });
       console.log(response);  // check the response
@@ -235,7 +236,7 @@ export const ChildBox = ({
       }, 
       {
         headers: {
-          Authorization: `Bearer ${userToken}`
+          Authorization: `Bearer ${token}`
         }
       }
     );
