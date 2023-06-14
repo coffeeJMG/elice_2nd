@@ -47,19 +47,33 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 export const Home = () => {
+  const token = localStorage.getItem("token");
+  let showTab;
+  let hideTab;
+  if (token) {
+    showTab = "none";
+    hideTab = "";
+  } else {
+    showTab = "";
+    hideTab = "none";
+  }
+  const navigate = useNavigate();
   const handleLogout = () => {
     // 토큰 가져오기
-    const token = localStorage.getItem("user");
+
     const role = localStorage.getItem("role");
+
     if ((token, role)) {
       // 토큰이 존재하므로 삭제 진행
-      localStorage.removeItem("user");
+      localStorage.removeItem("token");
       localStorage.removeItem("role");
       toast("로그아웃 성공");
     } else {
       // 오류 알림표시
       toast("오류로 인해 로그아웃하지 못했습니다.");
     }
+
+    navigate("/");
   };
 
   // 위치정보 depth1, depth2
@@ -88,39 +102,51 @@ export const Home = () => {
   const [address, setAddress] = useState(null);
 
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          setLatitude(position.coords.latitude);
-          setLongitude(position.coords.longitude);
+    // Function to get the user's current location
+    const getUserLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            setLatitude(position.coords.latitude);
+            setLongitude(position.coords.longitude);
 
-          try {
-            const response = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}`
-            );
-            const data = await response.json();
+            try {
+              const response = await fetch(
+                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}`
+              );
+              const data = await response.json();
 
-            const { suburb, city_district, city, province, quarter, borough } =
-              data.address;
-            const formattedAddress = `${
-              suburb || city_district || province || ""
-            } ${city}  ${quarter}`;
+              const {
+                suburb,
+                city_district,
+                city,
+                province,
+                quarter,
+                borough,
+              } = data.address;
+              const formattedAddress = `${
+                suburb || city_district || province || ""
+              } ${city}  ${quarter}`;
 
-            // console.log(data.address);
-            setAddress(formattedAddress);
-          } catch (error) {
+              // console.log(data.address);
+              setAddress(formattedAddress);
+            } catch (error) {
+              console.error(error);
+            }
+          },
+          (error) => {
             console.error(error);
           }
-        },
-        (error) => {
-          console.error(error);
-        }
-      );
-    } else {
-      console.error("현재 브라우저는 위치를 지원하지 않습니다.");
-    }
+        );
+      } else {
+        console.error("현재 브라우저는 위치를 지원하지 않습니다.");
+      }
+    };
+
+    getUserLocation();
   }, []);
-  const [distance, setDistance] = useState("10");
+
+  const [distance, setDistance] = useState(10);
 
   const handleDistanceChange = (selectedDistance) => {
     setDistance(selectedDistance);
@@ -146,12 +172,14 @@ export const Home = () => {
 
           <MenuSeb>
             <Link to="/login">
-              <SebP>로그인</SebP>
+              <SebP style={{ display: showTab }}>로그인</SebP>
             </Link>
           </MenuSeb>
 
           <MenuSeb>
-            <LogoutBut onClick={handleLogout}>로그아웃</LogoutBut>
+            <LogoutBut style={{ display: hideTab }} onClick={handleLogout}>
+              로그아웃
+            </LogoutBut>
           </MenuSeb>
 
           <MenuSeb>
@@ -443,27 +471,35 @@ const SimpleSlider = ({ latitude, longitude, distance }) => {
   // 로딩 화면
   const [loading, setLoading] = useState(true);
 
-  const hospitalApi = async () => {
-    try {
-      const response = await axios.get("/hospital/near", {
-        params: {
-          userLat: latitude,
-          userLon: longitude,
-          r: distance,
-        },
-      });
-      const responseData = response.data.data;
-      setHospitalData(responseData);
-      setLoading(false);
-      // console.log("데이터 성공", responseData);
-    } catch (error) {
-      console.error("병원 데이터를 가져오는 중에 오류가 발생했습니다.:", error);
-    }
-  };
-
   useEffect(() => {
-    hospitalApi();
-  }, []);
+    // Function to fetch hospital data using latitude and longitude
+    const hospitalApi = async () => {
+      try {
+        const response = await axios.get("/hospital/near", {
+          params: {
+            userLat: latitude,
+            userLon: longitude,
+            r: distance,
+          },
+        });
+        const responseData = response.data.data;
+        setHospitalData(responseData);
+        setLoading(false);
+        console.log("거리 수정:", distance, latitude, longitude);
+        console.log("데이터 성공", responseData);
+      } catch (error) {
+        console.error(
+          "병원 데이터를 가져오는 중에 오류가 발생했습니다.:",
+          error
+        );
+      }
+    };
+
+    // Only call the API if latitude and longitude have valid values
+    if (latitude !== null && longitude !== null) {
+      hospitalApi();
+    }
+  }, [latitude, longitude, distance]);
 
   console.log("Hospital Data:", hospitalData);
   // console.log("거리 수정:", distance, latitude, longitude);
