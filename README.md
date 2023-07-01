@@ -166,24 +166,24 @@ DATABASE_URL='{MySQL DB 경로}'
 ## 7. 서비스 구현 영상 및 테스트 자료
 
 <details><summary>각 API별 부하테스트</summary>
-<img src = './uploads/apitest.png' width =60% />
+<img src = 'https://github.com/coffeeJMG/elice_2nd/assets/114897197/60969fd2-3986-4d9c-94af-f2f8d025cd55' width =60% />
 </details>
 
 <details><summary>회원가입 및 로그인</summary>
-<img src = './uploads/registandlogin.gif' width =60% />
+<img src = 'https://github.com/coffeeJMG/elice_2nd/assets/114897197/498753c5-6c22-4e50-8e11-e21a0c34c14c' width =60% />
 </details>
 
 <details><summary>내 정보 및 자녀 등록</summary>
-<img src = './uploads/infoandkid.gif' width =60% />
+<img src = 'https://github.com/coffeeJMG/elice_2nd/assets/114897197/90ed47ab-75e3-43a3-b288-a34f740bb82a' width =60% />
 </details>
 
 <details><summary>병원 검색 및 예약</summary>
-<img src = './uploads/searchandreserv.gif' width =60% />
+<img src = 'https://github.com/coffeeJMG/elice_2nd/assets/114897197/7ba26e41-4569-4d41-ac4a-09939aff49a2' width =60% />
 </details>
 
 <details><summary>병원 관계자 및 관리자</summary>
-<img src = './uploads/hospitaluser.gif' width =60% />
-<img src = './uploads/admin.gif' width =60% />
+<img src = 'https://github.com/coffeeJMG/elice_2nd/assets/114897197/73ab9747-0a62-40a0-a6cf-08bbd6b2048f' width =60% />
+<img src = 'https://github.com/coffeeJMG/elice_2nd/assets/114897197/d0f3cc49-bffc-4781-8dbb-ef9cabd9b562' width =60% />
 </details>
 
 ## 8. 버전
