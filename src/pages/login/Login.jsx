@@ -89,12 +89,8 @@ export const Login = () => {
           navigate("/jail");
         }
 
-        navigate(page);
+        navigate("/");
         window.location.reload();
-        if (page === "http://localhost:3000/login") {
-          navigate(-1);
-        }
-        console.log("후", page);
       })
       .catch((error) => {
         // 오류처리

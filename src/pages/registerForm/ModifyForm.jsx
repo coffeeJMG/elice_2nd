@@ -174,7 +174,7 @@ export const ModifyForm = () => {
     } else {
       setNotAllow(true);
     }
-  }, [dutyName, fullAddress, images]);
+  }, [dutyName, fullAddress]);
 
   // 사진, 데이터들을 보내기 위해서 FormData 사용
   const onClick = () => {
@@ -240,11 +240,7 @@ export const ModifyForm = () => {
             ) : (
               <>
                 <InputName>병원 대표번호</InputName>
-                <InputContent
-                  type="text"
-                  value={phone}
-                  onChange={handlePhone}
-                />
+                <InputContent type="text" onChange={handlePhone} />
                 {!phoneValid && phone.length > 0 && (
                   <ErrorMessage>-을 붙여서 입력해주세요</ErrorMessage>
                 )}
