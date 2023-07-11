@@ -54,7 +54,7 @@
 ## 3. 서비스 구성
 
 - 사용 기술 스택
-  <img src = './uploads/stacks.png' width=60% >
+  <img src = 'https://github.com/coffeeJMG/elice_2nd_iLove/assets/114897197/7512c775-8c15-41dc-b728-a3f0b47da6af' width=60% >
 
 - 와이어 프레임 : [와이어 프레임](https://www.figma.com/file/7l9vvHRjn6VYUsUlHOvmlC/%EC%95%84%EC%9D%B4%EC%82%AC%EB%9E%91-%EC%9B%B9%EC%82%AC%EC%9D%B4%ED%8A%B8?type=design&node-id=0-1&t=iQRbEkIpYiR0FXWO-0)
 
@@ -152,7 +152,8 @@
 #### 프론트엔드 : .env 구성
 
 ```bash
-none
+REACT_APP_KAKAO_MAPS_JS_KEY="1d360bf8723604f386884c191abb5e58"
+REACT_APP_KAKAO_API_KEY="a479dd5cd6be47100c617e2b18393729"
 ```
 
 #### 백엔드 : .env 구성
