@@ -8,7 +8,6 @@ import axios from "axios";
 
 export const Post = ({ getAddrData }) => {
   const [isOpen, setIsOpen] = useState(false); //모달 상태
-  const [fulladdress, setFulladdress] = useState(""); // 전체주소
   const [dutyAddr1Depth, setDutyAddr1Depth] = useState(""); // 시,도 주소
   const [dutyAddr2Depth, setDutyAddr2Depth] = useState(""); // 상세주소
 
@@ -55,13 +54,10 @@ export const Post = ({ getAddrData }) => {
           return null;
         }
       } catch (error) {
-        console.error(error);
         return null;
       }
     };
     const { lat, lng } = await convertAddressToCoordinates();
-
-    console.log(lat, lng);
 
     const newAddress = data.address.split(" "); // 검색한 주소를 배열로 전환
     const dutyAddr1Depth = newAddress.splice(0, 2).join(" "); // 시,도 주소를 뽑아내기 위해서 인덱스 번호로 자름
