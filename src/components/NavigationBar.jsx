@@ -39,6 +39,8 @@ export const NavigationBar = () => {
     myPageLink = "/modify";
   } else if (userRole === "client") {
     myPageLink = "/Mypage";
+  } else if (userRole === "admin") {
+    myPageLink = "/admin";
   } else {
     myPageLink = "/login";
   }
@@ -59,7 +61,7 @@ export const NavigationBar = () => {
       <Nav>
         <NavUl>
           <NavLi>
-            <NavA to={reservationLink} disabled={userRole === "manager"}>
+            <NavA to={reservationLink} disabled={userRole !== "client"}>
               <NavImg src={reservation} alt="star"></NavImg>
               <NavP>예약현황</NavP>
             </NavA>
@@ -79,7 +81,7 @@ export const NavigationBar = () => {
           </NavLi>
 
           <NavLi>
-            <NavA to={favoriteLink} disabled={userRole === "manager"}>
+            <NavA to={favoriteLink} disabled={userRole !== "client"}>
               <NavImg src={star} alt="star"></NavImg>
               <NavP>즐겨찾기</NavP>
             </NavA>

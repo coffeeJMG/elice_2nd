@@ -11,7 +11,6 @@ export const Wrapper = styled.div`
     width: 100%;
     display: flex;
     justify-content: space-between;
-    margin-bottom: 2%;
   }
 
   & > div p {
@@ -26,7 +25,7 @@ export const Wrapper = styled.div`
   }
 
   & img:hover {
-    filter: invert(50%);
+    filter: invert(30%);
   }
 `;
 
