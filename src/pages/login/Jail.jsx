@@ -3,15 +3,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 // 공통 컴포넌트
-import {
-  Button,
-  CardBox,
-  Header,
-  NavigationBar,
-  Container,
-  Footer,
-  SearchBar,
-} from "../../components/index";
+import { CardBox } from "../../components/index";
 import styled from "styled-components";
 import logo from "../../assets/newLogo.jpg";
 import colors from "../../constants/colors";

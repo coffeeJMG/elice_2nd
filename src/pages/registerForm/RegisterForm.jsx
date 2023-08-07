@@ -72,13 +72,15 @@ export const RegisterForm = () => {
   // 이미지 파일 추가
   const fileInputRef = useRef(null);
 
-  const handleChange = (e) => {
-    const newImages = [...images, e.target.files[0]];
-    setImages(newImages);
+  // 이미지 등록 클릭 이벤트
+  const registerHospitalImage = () => {
+    fileInputRef.current.click();
   };
 
-  const handleClick = () => {
-    fileInputRef.current.click();
+  // 이미지 업로드 클릭 이벤트
+  const hospitalImageUpload = (e) => {
+    const newImages = [...images, e.target.files[0]];
+    setImages(newImages);
   };
 
   // 신규 등록 버튼 클릭 시 서버로 데이터 전송
@@ -99,32 +101,6 @@ export const RegisterForm = () => {
     }
   });
 
-  // 오픈 시간 담을 변수
-  const [
-    dutyTime1s,
-    dutyTime2s,
-    dutyTime3s,
-    dutyTime4s,
-    dutyTime5s,
-    dutyTime6s,
-    dutyTime7s,
-    dutyTime8s,
-    dutyTime9s,
-  ] = openDutyTimes;
-
-  // 마감 시간 담을 변수
-  const [
-    dutyTime1c,
-    dutyTime2c,
-    dutyTime3c,
-    dutyTime4c,
-    dutyTime5c,
-    dutyTime6c,
-    dutyTime7c,
-    dutyTime8c,
-    dutyTime9c,
-  ] = closeDutyTimes;
-
   const data = {
     dutyAddr: fullAddress,
     dutyAddr1Depth: addr1,
@@ -134,28 +110,13 @@ export const RegisterForm = () => {
     notice: notice,
     dutyName: dutyName,
     dutyTel1: phone,
-    dutyTime9s: dutyTime9s,
-    dutyTime9c: dutyTime9c,
-    dutyTime1c: dutyTime1c,
-    dutyTime1s: dutyTime1s,
-    dutyTime2c: dutyTime2c,
-    dutyTime2s: dutyTime2s,
-    dutyTime3c: dutyTime3c,
-    dutyTime3s: dutyTime3s,
-    dutyTime4c: dutyTime4c,
-    dutyTime4s: dutyTime4s,
-    dutyTime5c: dutyTime5c,
-    dutyTime5s: dutyTime5s,
-    dutyTime6c: dutyTime6c,
-    dutyTime6s: dutyTime6s,
-    dutyTime7c: dutyTime7c,
-    dutyTime7s: dutyTime7s,
-    dutyTime8c: dutyTime8c,
-    dutyTime8s: dutyTime8s,
+    ...openDutyTimes,
+    ...closeDutyTimes,
     wgs84Lat: lat,
     wgs84Lon: lng,
   };
 
+  // 병원 등록을 위해 채워야 하는 필드의 조건
   useEffect(() => {
     if (dutyName && fullAddress && images.length > 0) {
       setNotAllow(false);
@@ -166,7 +127,8 @@ export const RegisterForm = () => {
 
   const navigate = useNavigate();
 
-  const onClick = () => {
+  // 신규병원 등록 버튼 클릭 시 서버와 통신할 때 담을 데이터
+  const registerNewHospital = () => {
     const formData = new FormData();
 
     for (const key in data) {
@@ -179,7 +141,6 @@ export const RegisterForm = () => {
       formData.append("files", image);
     });
 
-    console.log(formData);
     instance
       .post("hospital", formData, {
         headers: {
@@ -236,14 +197,14 @@ export const RegisterForm = () => {
                 btnColor={"#ffffff"}
                 bgcolor={colors.primary}
                 btnFontSize={"18px"}
-                onClick={handleClick}
+                onClick={registerHospitalImage}
                 width={"100px"}
               ></Button>
             </ImageBox>
             <input
               type="file"
               ref={fileInputRef}
-              onChange={handleChange}
+              onChange={hospitalImageUpload}
               style={{ display: "none" }}
             />
             {images.map((image, argI) => {
@@ -276,7 +237,7 @@ export const RegisterForm = () => {
 
           <Button
             label={"신규등록"}
-            onClick={onClick}
+            onClick={registerNewHospital}
             disabled={notAllow}
             bgcolor={colors.primary}
             btnColor={"#ffffff"}

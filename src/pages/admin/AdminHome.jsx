@@ -1,6 +1,7 @@
 import React, { useState, Suspense } from "react";
 import styled from "styled-components";
-import { PersonalTitle } from "./HospitalClient";
+import { AdminNotice } from "./AdminNotice";
+import { useNavigate } from "react-router-dom";
 
 // 필요할 때마다 동적 로딩을 위한 react.lazy 함수 사용 코드
 // 각 컴포넌트를 로딩하기 위한 코드
@@ -27,7 +28,7 @@ const menuTab = [
 ];
 
 export const AdminHome = () => {
-  const [content, setContent] = useState(null);
+  const [content, setContent] = useState(<AdminNotice />);
   const [selectedMenu, setSelectedMenu] = useState("");
 
   // Menu 탭 클릭 시 switch 문을 통해서 정의 해둔 각 컴포넌트를 로딩
@@ -47,15 +48,22 @@ export const AdminHome = () => {
         break;
       //아무것도 클릭 하지 않았다면 AdminHome
       default:
-        setContent(null);
+        setContent(<AdminNotice />);
         setSelectedMenu(null);
     }
   };
-
+  const navigate = useNavigate();
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("verified");
+    localStorage.removeItem("role");
+    navigate("/");
+  };
   return (
     <>
       <AdminBox>
         <AdminMenuBox>
+          <button onClick={logout}>로그아웃</button>
           {menuTab.map((menuValue) => {
             return (
               <AdminMenu

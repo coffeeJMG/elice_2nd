@@ -31,7 +31,7 @@ import { HospitalCard } from "./HospitalCard";
 
 //검색 정렬 옵션
 const SORT_OPTIONS = [
-  { name: "인기순", state: "review" },
+  { name: "리뷰순", state: "review" },
   { name: "이름순", state: "name" },
 ];
 
@@ -274,7 +274,7 @@ export const SearchPage = () => {
           onLocationChange={handleDepthChange}
         />
         <Style.SearchHeader>
-          <span>총 {totalCount} 개</span>
+          <span>총 {totalCount}개</span>
           <Style.DropdownContainer>
             <button onClick={handleOptionClick}>
               {option.name}

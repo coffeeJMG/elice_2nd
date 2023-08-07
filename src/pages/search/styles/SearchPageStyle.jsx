@@ -57,4 +57,8 @@ export const DropdownContainer = styled.div`
     cursor: pointer;
     font-size: 16px;
   }
+
+  & img:hover {
+    filter: invert(50%);
+  }
 `;
