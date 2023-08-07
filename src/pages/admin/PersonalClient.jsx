@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery, useQueryClient, useMutation } from "react-query";
 
 import { Button } from "../../components/Button";
 import colors from "../../constants/colors";
@@ -10,22 +10,23 @@ import { adminInstance } from "../../server/Fetcher";
 export const PersonalClient = () => {
   const [currentPage, setCurrentPage] = useState(0); // 페이지 숫자 상태
   const maxPostPage = currentPage + 1;
-  const [checkArray, setCheckArray] = useState([]);
   const [isAllChecked, setIsAllChecked] = useState(false);
 
   const queryClient = useQueryClient();
 
   // 인스턴스 사용하는 함수
-  const listQuery = useQuery("list", async () => {
+  const generalQuery = useQuery("generalClient", async () => {
     const response = await adminInstance.get("/admin/get/generelclient"); // "/"는 baseURL에 추가된 경로입니다
     return response.data;
   });
 
-  const list = listQuery.data;
-  console.log(list);
+  const generalClient = generalQuery.data;
+
   const [searchInput, setSearchInput] = useState(""); // 검색창 인풋
   const [submitted, setSubmitted] = useState(false); // 검색창 submit 상태
   const [checkList, setCheckList] = useState([]); // 체크박스
+
+  //검색창 인풋 값
   const onChange = (e) => {
     setSearchInput(e.target.value);
     setSubmitted(false);
@@ -37,18 +38,18 @@ export const PersonalClient = () => {
     setSubmitted(true);
   };
 
+  // 전체 선택/해제
   const allCheck = () => {
     setIsAllChecked(!isAllChecked);
     if (!isAllChecked) {
       const ids = paginatedList.map((item) => item.id);
-      const copy = [...ids];
-      checkList.push(...copy);
-      checkArray.push(...copy);
+      const copyList = [...ids];
+      checkList.push(...copyList);
     } else {
       setCheckList([]);
     }
   };
-  // 체크박스 확인하는 함수
+  // 단일 선택/해제
   const handleSingleCheck = (checked, id) => {
     if (checked) {
       setCheckList((prev) => [...prev, id]);
@@ -56,32 +57,48 @@ export const PersonalClient = () => {
       setCheckList((prev) => prev.filter((el) => el !== id));
     }
 
-    const copy = [...checkList];
-    copy.push(Number(id));
-    setCheckArray(copy);
+    const copyList = [...checkList];
+    copyList.push(Number(id));
+    setCheckList(copyList);
   };
 
-  const arrayDelete = async () => {
-    console.log("idArray", checkArray);
+  // 전체 삭제를 위한 delete 요청
+  const allDeleteRequest = useMutation(async () => {
     await adminInstance.delete("/admin/deleteall", {
       data: {
-        userIds: checkArray,
+        userIds: checkList,
       },
     });
-    queryClient.invalidateQueries("list");
-  };
-  // 페이지네이션 데이터의 id와 체크된 열의 id 값 필터
-  const handleDelete = async (item) => {
-    console.log("삭제할 id:", item);
-    await adminInstance.delete(`admin/delete/${item.id}`); //React Query에서 'invalidateQueries' 기능 사용해서 업데이트 된 목록 다시
-    queryClient.invalidateQueries("list");
+    queryClient.invalidateQueries("generalClient");
+  });
+
+  // 단일 삭제
+  const handleAllDelete = () => {
+    allDeleteRequest.mutate();
   };
 
-  if (listQuery.isLoading) {
+  // 단일 삭제를 위한 delete 요청
+  const sigleDeleteRequest = async (item) => {
+    return await adminInstance.delete(`admin/delete/${item.id}`);
+  };
+
+  const { mutate } = useMutation(sigleDeleteRequest, {
+    onSuccess: (data) => {
+      queryClient.invalidateQueries("generalClient");
+    },
+    onError: (data) => {},
+  });
+
+  const handleSingleDelete = (item) => {
+    mutate(item);
+  };
+
+  if (generalQuery.isLoading) {
     return <h1>로딩중입니다..</h1>;
   }
 
-  const filteredList = list.data?.filter(
+  // e-mail 일치 검사로 유저 검색
+  const filteredList = generalClient.data?.filter(
     (item) => !submitted || item.email === searchInput
   );
 
@@ -135,7 +152,7 @@ export const PersonalClient = () => {
                   label={"삭제"}
                   bgcolor={colors.primary}
                   btnColor={"white"}
-                  onClick={() => handleDelete(item)}
+                  onClick={() => handleSingleDelete(item)}
                 />
               </TableData>
             </TableRow>
@@ -149,7 +166,7 @@ export const PersonalClient = () => {
           label={"선택삭제"}
           bgcolor={colors.primary}
           btnColor={"white"}
-          onClick={arrayDelete}
+          onClick={handleAllDelete}
         />
       </AlignBtn>
       <ButtonBox>

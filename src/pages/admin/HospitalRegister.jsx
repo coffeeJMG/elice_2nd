@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { useQuery, useQueryClient } from "react-query";
 
@@ -10,13 +10,11 @@ import { adminInstance } from "../../server/Fetcher";
 export const HospitalRegister = () => {
   const [currentPage, setCurrentPage] = useState(0); // 페이지 숫자 상태
   const maxPostPage = currentPage + 1;
-  const [checkArray, setCheckArray] = useState([]);
   const [isAllChecked, setIsAllChecked] = useState(false);
-
   const queryClient = useQueryClient();
 
   // 인스턴스 사용하는 함수
-  const listQuery = useQuery("list", async () => {
+  const listQuery = useQuery("requestList", async () => {
     const response = await adminInstance.get(
       "admin/get/notverifiedhospitalclient"
     ); // "/"는 baseURL에 추가된 경로입니다
@@ -24,11 +22,13 @@ export const HospitalRegister = () => {
     return response.data;
   });
 
-  const list = listQuery.data;
-  console.log(list);
+  const requestList = listQuery.data;
+
   const [searchInput, setSearchInput] = useState(""); // 검색창 인풋
   const [submitted, setSubmitted] = useState(false); // 검색창 submit 상태
   const [checkList, setCheckList] = useState([]); // 체크박스
+
+  // 검색창 인풋 값
   const onChange = (e) => {
     setSearchInput(e.target.value);
     setSubmitted(false);
@@ -40,18 +40,18 @@ export const HospitalRegister = () => {
     setSubmitted(true);
   };
 
+  // 전체 선택/해제
   const allCheck = () => {
     setIsAllChecked(!isAllChecked);
     if (!isAllChecked) {
       const ids = paginatedList.map((item) => item.id);
       const copy = [...ids];
       checkList.push(...copy);
-      checkArray.push(...copy);
     } else {
       setCheckList([]);
     }
   };
-  // 체크박스 확인하는 함수
+  // 단일 선택/해제
   const handleSingleCheck = (checked, id) => {
     if (checked) {
       setCheckList((prev) => [...prev, id]);
@@ -59,38 +59,30 @@ export const HospitalRegister = () => {
       setCheckList((prev) => prev.filter((el) => el !== id));
     }
 
-    const copy = [...checkList];
-    copy.push(Number(id));
-    setCheckArray(copy);
+    const copyList = [...checkList];
+    copyList.push(Number(id));
+    setCheckList(copyList);
   };
 
+  // 전체 등록
   const checkRegister = async () => {
-    console.log("idArray", checkArray);
     await adminInstance.patch("/admin/verifyall", {
-      userIds: checkArray,
+      userIds: checkList,
     });
     queryClient.invalidateQueries("list");
   };
-  // 페이지네이션 데이터의 id와 체크된 열의 id 값 필터
+  // 단일 등록
   const handleRegister = async (item) => {
-    console.log("삭제할 id:", item);
     await adminInstance.patch(`/admin/verify/${item.id}`); //React Query에서 'invalidateQueries' 기능 사용해서 업데이트 된 목록 다시
-    queryClient.invalidateQueries("list");
+    queryClient.invalidateQueries("requestList");
   };
-
-  //페이지네이션 로직
-  useEffect(() => {
-    if (currentPage <= maxPostPage - 1) {
-      const nextPage = currentPage + 1;
-      queryClient.prefetchQuery(["posts", nextPage], () => listQuery.data);
-    }
-  }, [currentPage, queryClient]);
 
   if (listQuery.isLoading) {
     return <h1>로딩중입니다..</h1>;
   }
 
-  const filteredList = list.data?.filter(
+  // 핸드폰 번호 일치 시 해당 지원 검색
+  const filteredList = requestList.data?.filter(
     (item) => !submitted || item.phoneNumber === searchInput
   );
 
