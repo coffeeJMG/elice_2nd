@@ -2,7 +2,14 @@
 
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  useNavigate,
+} from "react-router-dom";
+import axios from "axios";
 
 // 알림창 라이브러리
 import "react-toastify/dist/ReactToastify.css";
@@ -26,7 +33,7 @@ export const Login = () => {
   const [userRole, setUserRole] = useState("");
   // 버튼 활성화 비활성화 여부
   const [notAllow, setNotAllow] = useState(true);
-  const { page } = useParams();
+
   // 이메일 유효성 검사
   const handleEmail = (e) => {
     setEmail(e.target.value);
@@ -56,9 +63,8 @@ export const Login = () => {
     setNotAllow(true);
   }, [emailValid, pwValid]);
   const navigate = useNavigate();
-
   // 로그인 폼 전송
-  console.log("로그인전", page);
+
   const getUserLoginInfo = async () => {
     // axios를 사용하여 post 요청
     await instance
@@ -87,10 +93,9 @@ export const Login = () => {
         if (verified === false) {
           alert("승인 대기중입니다");
           navigate("/jail");
+        } else {
+          navigate("/");
         }
-
-        navigate("/");
-        window.location.reload();
       })
       .catch((error) => {
         // 오류처리

@@ -15,10 +15,8 @@ import MyPage from "./info/MyPage";
 import ChildPage from "./info/ChildPage";
 import { Favorite } from "./favorite/Favorite";
 import { ModifyForm } from "./registerForm/ModifyForm";
-import { Jail } from "./login/Jail";
 
 export {
-  Jail,
   AdminHome,
   Home,
   MyPage,

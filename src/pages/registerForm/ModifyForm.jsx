@@ -7,6 +7,8 @@ import mainLogo from "../../assets/mainLogo.svg";
 import { SelectBox } from "./SelectBox";
 
 import { instance } from "../../server/Fetcher";
+import { Link } from "react-router-dom";
+import { useQuery, useQueryClient } from "react-query";
 
 export const ModifyForm = () => {
   const [dutyName, setDutyName] = useState(""); // 병원명 인풋 관리
@@ -37,8 +39,9 @@ export const ModifyForm = () => {
   const [closeTimes, setCloseTimes] = useState([]); // 마감시간
   const [existingImage, setExistingImage] = useState([]); // 기존 등록 이미지
   const [dutyTimesFetched, setDutyTimesFetched] = useState(false); // 시간 요청을 한번만 하기위한 boolean
+  const [deleteImageId, setDeleteImageId] = useState(""); // 삭제할 이미지 Id
 
-  // 최초 통신 시 값이 undefined 가 나와서 병원 id 가 있을 때만 실행
+  // 최초 통신 시 값이 undefined 가 나와서 if 문으로 통신
 
   if (hpid === undefined || null) {
   } else if (hpid) {
@@ -69,13 +72,15 @@ export const ModifyForm = () => {
         }
         setCloseTimes(dutyCloseArray);
         setExistingImage(res.data.data.image);
+
+        console.log(res.data.data.image[0]);
       }
 
       setDutyTimesFetched(true);
+      console.log(res.data.data.image);
     });
   }
 
-  // Post 컴포넌트에서 값들을 받아오는 변수
   const getAddrData = (addr1, addr2, lat, lng, fullAddress) => {
     setAddr1(addr1);
     setAddr2(addr2);
@@ -84,12 +89,12 @@ export const ModifyForm = () => {
     setFullAddress(fullAddress);
   };
 
-  // SelectBox 에서 오픈시간 데이터를 받아온다.
+  // 마찬가지로 SelectBox 에서 오픈시간 데이터를 받아온다.
   const getOpenTimeData = (openTime) => {
     setOpenTime(openTime);
   };
 
-  //  SelectBox 에서 마감시간 데이터를 받아온다.
+  // 마찬가지로 SelectBox 에서 마감시간 데이터를 받아온다.
   const getCloseTimeData = (closeTime) => {
     setCloseTime(closeTime);
   };
@@ -121,16 +126,15 @@ export const ModifyForm = () => {
   const phoneRegex = /^01[0-9]{1}-[0-9]{4}-[0-9]{4}$/;
   const phoneValid = phoneRegex.test(phone) ? true : false;
 
+  // 이미지 파일 추가
   const fileInputRef = useRef(null);
 
-  // 이미지 파일 업로드 클릭 이벤트
-  const hospitalImageUpload = (e) => {
+  const handleChange = (e) => {
     const newImages = [...images, e.target.files[0]];
     setImages(newImages);
   };
 
-  // 병원 사진 등록 클릭 이벤트
-  const registerHospitalImage = () => {
+  const handleClick = () => {
     fileInputRef.current.click();
   };
 
@@ -145,12 +149,38 @@ export const ModifyForm = () => {
     }
   });
 
-  // SelectBox 에서 받아온 closeTime 배열을 돌면서 dutyTimes에 저장
+  // save deadline
   closeTime.forEach((option, index) => {
     if (option && option.value !== "") {
       closeDutyTimes[index] = option.value;
     }
   });
+
+  // 오픈 시간 담을 변수
+  const [
+    dutyTime1s,
+    dutyTime2s,
+    dutyTime3s,
+    dutyTime4s,
+    dutyTime5s,
+    dutyTime6s,
+    dutyTime7s,
+    dutyTime8s,
+    dutyTime9s,
+  ] = openDutyTimes;
+
+  // 마감 시간 담을 변수
+  const [
+    dutyTime1c,
+    dutyTime2c,
+    dutyTime3c,
+    dutyTime4c,
+    dutyTime5c,
+    dutyTime6c,
+    dutyTime7c,
+    dutyTime8c,
+    dutyTime9c,
+  ] = closeDutyTimes;
 
   const data = {
     dutyAddr: fullAddress,
@@ -161,8 +191,24 @@ export const ModifyForm = () => {
     notice: notice,
     dutyName: dutyName,
     dutyTel1: phone,
-    ...openDutyTimes,
-    ...closeDutyTimes,
+    dutyTime9s: dutyTime9s,
+    dutyTime9c: dutyTime9c,
+    dutyTime1c: dutyTime1c,
+    dutyTime1s: dutyTime1s,
+    dutyTime2c: dutyTime2c,
+    dutyTime2s: dutyTime2s,
+    dutyTime3c: dutyTime3c,
+    dutyTime3s: dutyTime3s,
+    dutyTime4c: dutyTime4c,
+    dutyTime4s: dutyTime4s,
+    dutyTime5c: dutyTime5c,
+    dutyTime5s: dutyTime5s,
+    dutyTime6c: dutyTime6c,
+    dutyTime6s: dutyTime6s,
+    dutyTime7c: dutyTime7c,
+    dutyTime7s: dutyTime7s,
+    dutyTime8c: dutyTime8c,
+    dutyTime8s: dutyTime8s,
     wgs84Lat: lat,
     wgs84Lon: lng,
   };
@@ -174,7 +220,7 @@ export const ModifyForm = () => {
     } else {
       setNotAllow(true);
     }
-  }, [dutyName, fullAddress]);
+  }, [dutyName, fullAddress, images]);
 
   // 사진, 데이터들을 보내기 위해서 FormData 사용
   const onClick = () => {
@@ -240,7 +286,11 @@ export const ModifyForm = () => {
             ) : (
               <>
                 <InputName>병원 대표번호</InputName>
-                <InputContent type="text" onChange={handlePhone} />
+                <InputContent
+                  type="text"
+                  value={phone}
+                  onChange={handlePhone}
+                />
                 {!phoneValid && phone.length > 0 && (
                   <ErrorMessage>-을 붙여서 입력해주세요</ErrorMessage>
                 )}
@@ -311,7 +361,7 @@ export const ModifyForm = () => {
                     btnColor={"#ffffff"}
                     bgcolor={colors.primary}
                     btnFontSize={"18px"}
-                    onClick={registerHospitalImage}
+                    onClick={handleClick}
                     width={"100px"}
                     disabled={true}
                   ></Button>
@@ -326,14 +376,14 @@ export const ModifyForm = () => {
                     btnColor={"#ffffff"}
                     bgcolor={colors.primary}
                     btnFontSize={"18px"}
-                    onClick={registerHospitalImage}
+                    onClick={handleClick}
                     width={"100px"}
                   ></Button>
                 </ImageBox>
                 <input
                   type="file"
                   ref={fileInputRef}
-                  onChange={hospitalImageUpload}
+                  onChange={handleChange}
                   style={{ display: "none" }}
                 />
 
@@ -380,7 +430,7 @@ export const ModifyForm = () => {
                 <input
                   type="file"
                   ref={fileInputRef}
-                  onChange={hospitalImageUpload}
+                  onChange={handleChange}
                   style={{ display: "none" }}
                 />
 
